@@ -1,0 +1,146 @@
+<html>
+<head>
+    <meta charset="UTF-8"/>
+    <title>sizing</title>
+
+    <link href="webjars/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" media="screen"/>
+
+    <script src="webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+    <script src="webjars/jquery/3.3.1-1/jquery.min.js"></script>
+    <script>
+    $(document).ready(function() {
+    $('#integerForm').bootstrapValidator();
+});
+        function calculate() {
+            $.ajax({
+                url: "/calculate",
+                data: {
+                    "objectsCount": $("#objectsCount").val(),
+                    "objectDataFrequency": $("#objectDataFrequency").val(),
+                    "historyHorizon": $("#historyHorizon").val(),
+                    "dataRecordSize": $("#dataRecordSize").val(),
+                    "replicationFactor": $("#replicationFactor").val(),
+                    "diskVolume": $("#diskVolume").val(),
+                    "diskWorkPeriod": $("#diskWorkPeriod").val(),
+                    "diskBuyPeriod": $("#diskBuyPeriod").val()
+                },
+                success: function(data) {
+                    if (data.description == "ok") {
+                        $("#dataNodesHDD").val(data.result.dataNodeHDD)
+                        $("#nameNodeRAM").val(data.result.metadataMegabytes)
+                        $("#disksCount").val(data.result.disksCount)
+                        $("#dayDataReadDuration").val(data.result.dayDataReadTime)
+                    }
+                    else {
+                        alert(data.description)
+                    }
+                },
+                failure: function() {
+                    alert("Сервер недоступен, попробуйте позже")
+                },
+                dataType: 'json'
+	        });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="py-5 text-center">
+            <h2>Big data sizing</h2>
+            <p class="lead">Расчет ресурсов под коллекцию больших данных</p>
+        </div>
+        <div class="row">
+            <div class="col-md-5 order-md-1">
+                <form>
+                    <div class="form-group row">
+                        <label for="objectsCount" class="col-sm-6 col-form-label">Количество объектов</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="1" class="form-control" id="objectsCount">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="objectDataFrequency" class="col-sm-6 col-form-label">Частота сбора данных</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="1" class="form-control" id="objectDataFrequency" placeholder="Секунды">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="historyHorizon" class="col-sm-6 col-form-label">Глубина архива</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="1" class="form-control" id="historyHorizon" placeholder="Месяцы">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="dataRecordSize" class="col-sm-6 col-form-label">Размер записи</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="1" class="form-control" id="dataRecordSize" placeholder="Байты">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="replicationFactor" class="col-sm-6 col-form-label">Количество реплик</label>
+                        <div class="col-sm-5">
+                            <select id="replicationFactor" class="custom-select" required>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="diskVolume" class="col-sm-6 col-form-label">Объем диска</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="1" class="form-control" id="diskVolume" placeholder="Терабайты">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="diskWorkPeriod" class="col-sm-6 col-form-label">Срок службы диска</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="1" class="form-control" id="diskWorkPeriod" placeholder="Месяцы">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="diskBuyPeriod" class="col-sm-6 col-form-label">Срок закупки диска</label>
+                        <div class="col-sm-5">
+                            <input type="number" min="1" class="form-control" id="diskBuyPeriod" placeholder="Месяцы">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <div class="col-md-6 mb-2"></div>
+                        <div class="col-md-5 mb-2">
+                            <button class="btn btn-primary btn-block" type="button" onclick="calculate();">Рассчитать</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-4 order-md-2">
+                <form>
+                    <div class="form-group row">
+                        <label for="dataNodesHDD" class="col-sm-8 col-form-label">Объем реплик (Тб)</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" id="dataNodesHDD" readonly type="text">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="nameNodeRAM" class="col-sm-8 col-form-label">Объем метаданных (Мб)</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" id="nameNodeRAM" readonly type="text">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="disksCount" class="col-sm-8 col-form-label">Количество дисков</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" id="disksCount" readonly type="text">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="dayDataReadDuration" class="col-sm-8 col-form-label">Время чтения дня (сек)</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" id="dayDataReadDuration" readonly type="text">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
